@@ -27,7 +27,7 @@ missing = ones(m,n) - known;  % index matrix of missing elements
 min_R    = para.min_R;        % minimum rank of chosen image
 max_R    = para.max_R;        % maximum rank of chosen image
 max_iter = para.max_iter;     % number of max iteration
-eps      = para.epsilon;      % tolerance
+tol      = para.epsilon;      % tolerance
 alpha_0  = para.alpha;        % initial value of alpha
 rho      = para.rho; 
 
@@ -83,7 +83,7 @@ for R = min_R : max_R    % test if each rank is proper for completion
             
             delta = norm(X - last_X, 'fro') / M_fro;
             fprintf('||X_k+1-X_k||_F/||M||_F %.4f\n', delta);
-            if delta < eps
+            if delta < tol
                 break ;
             end
             last_X = X;
