@@ -1,4 +1,4 @@
-function [ W_sort ] = weight_sort( known, W_inc )
+function [ W_sort ] = weight_sort( mask, W_inc )
 %--------------------------------------------------------------------------
 % Xue Shengke, Zhejiang University, April 2017.
 % Contact information: see readme.txt.
@@ -9,14 +9,14 @@ function [ W_sort ] = weight_sort( known, W_inc )
 %     with more observed elements are given smaller weights
 % 
 %     Inputs:
-%         known              --- index matrix of known elements
+%         mask               --- index matrix of known elements
 %         W_inc              --- increasing weight matrix
 % 
 %     Outputs: 
 %         W_sort             --- sorted weight matrix
 %--------------------------------------------------------------------------
 
-N_ori = sum(known, 2);
+N_ori = sum(mask, 2);
 [N_sort, index] = sort(N_ori, 'descend');
 [~, index_back] = sort(index, 'ascend');
 
