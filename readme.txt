@@ -32,8 +32,8 @@ al. (2013) paper, in which more details are demonstrated.
 If you have any questions about this implementation, please do not hesitate 
 to contact me.
 
-Xue Shengke, 
+Shengke Xue, 
 College of Information Science and Electronic Engineering,
-Zhejiang University, P. R. China,
+Zhejiang University, Hangzhou, P. R. China,
 e-mail: (either one is o.k.)
-xueshengke@zju.edu.cn, or xueshengke1993@gmail.com.
+xueshengke@zju.edu.cn, xueshengke1993@gmail.com.
