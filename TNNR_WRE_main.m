@@ -29,8 +29,8 @@ for i = 1 : num_mask
 end
 
 %% parameter configuration
-image_id = 1;            % select an image for experiment
-mask_id  = 4;            % select a mask for experiment
+image_id = 9;            % select an image for experiment
+mask_id  = 6;            % select a mask for experiment
 
 para.block = 1;          % 1 for block occlusion, 0 for random noise
 para.lost = 0.50;        % percentage of lost elements in matrix
@@ -45,9 +45,10 @@ para.epsilon = 1e-3;     % tolerance of iteration
 
 para.alpha = 5e-4;       % 1/apha, positive step size of gradient descent
 para.rho   = 1.15;       % rho > 1, scale up the value of alpha
-para.theta1 = 1.7;       % compute an increasing weight matrix, W1 >= W2
+para.theta1 = 1.6;       % compute an increasing weight matrix, W1 >= W2
 para.theta2 = 1;         % if theta = 1, W = I, an indentity matrix
-para.L     = 150;        % 1 <= L <= m, compute W
+para.L     = 50;        % 1 <= L <= m, compute W
+para.progress = 0;
 
 %% select an image and a mask for experiment
 image_name = image_list{image_id};
@@ -108,6 +109,16 @@ subplot(2, 2, 4);
 plot(tnnr_res.Erec_iter, '^-');
 xlabel('Iteration');
 ylabel('Recovery error');
+
+if para.progress
+    figure('NumberTitle', 'off', 'Name', 'TNNR-WRE progress');
+    num_iter = min(tnnr_iteration);
+    X_rec = X_rec / 255;
+    for i = 1 : num_iter
+        imshow(X_rec(:, :, :, i));
+        title(['iter ' num2str(i)]);
+    end    % better set a breakpoint here, to display image step by step
+end
 
 %% record test results
 outputFileName = fullfile(result_dir, 'parameters.txt'); 
