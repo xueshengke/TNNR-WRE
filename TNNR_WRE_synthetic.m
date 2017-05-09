@@ -16,28 +16,15 @@ addpath mask ;
 addpath function;
 
 %% read image files directory information
-result_dir = './result/image';
+result_dir = './result/synthetic';
 if ~exist(result_dir, 'dir'),   mkdir(result_dir); end
-image_list = {'re1.jpg', 're2.jpg', 're3.jpg', 're4.jpg', 're5.jpg', ...
-              're6.jpg', 're7.jpg', 're8.jpg', 're9.jpg', 're10.jpg', ...
-              're11.jpg' };
-
-file_list = dir('mask');
-num_mask = length(file_list) - 2;
-mask_list = cell(num_mask, 1);
-for i = 1 : num_mask
-    mask_list{i} = file_list(i+2).name;
-end
 
 %% parameter configuration
-image_id = 9;            % select an image for experiment
-mask_id  = 6;            % select a mask for experiment
-
-para.block = 1;          % 1 for block occlusion, 0 for random noise
+% para.block = 1;          % 1 for block occlusion, 0 for random noise
 para.lost = 0.50;        % percentage of lost elements in matrix
-para.save_eps = 1;       % save eps figure in result directory
+para.save_eps = 0;       % save eps figure in result directory
 para.min_R = 1;          % minimum rank of chosen image
-para.max_R = 10;         % maximum rank of chosen image
+para.max_R = 15;          % maximum rank of chosen image
 % it requires to test all ranks from min_R to max_R, note that different
 % images have different ranks, and various masks affect the ranks, too.
 
@@ -51,26 +38,30 @@ para.theta2 = 1;         % if theta = 1, W = I, an indentity matrix
 para.L     = 50;        % 1 <= L <= m, compute W
 para.progress = 0;
 
-%% select an image and a mask for experiment
-image_name = image_list{image_id};
-X_full = double(imread(image_name));
-[m, n, dim] = size(X_full);
-fprintf('choose image: %s, ', image_name);
+%% generate synthetic data for experiment
+image_name = 'synthetic_data';
+m = 200;
+n = 200;
+dim = 3;
+r = 10;
+sigma = 0.1;    % [0.1, 0.9]
 
-if para.block  
-    % block occlusion
-    mask = double(imread(mask_list{mask_id}));
-    mask = mask ./ max(mask(:));       % index matrix of the known elements
-    fprintf('mask: %s.\n', mask_list{mask_id});
-else
-    % random loss
-    rnd_idx = randi([0, 100-1], m, n);
-    old_idx = rnd_idx;
-    lost = para.lost * 100;
-    fprintf('loss: %d%% elements are missing.\n', lost);
-    rnd_idx = double(old_idx < (100-lost));
-    mask = repmat(rnd_idx, [1 1 dim]); % index matrix of the known elements
-end
+%% random loss
+rnd_idx = randi([0, 100-1], m, n);
+old_idx = rnd_idx;
+lost = para.lost * 100;
+fprintf('loss: %d%% elements are missing.\n', lost);
+rnd_idx = double(old_idx < (100-lost));
+mask = repmat(rnd_idx, [1 1 dim]); % index matrix of the known elements
+% missing = ones(size(mask)) - mask; % index matrix of the unknown elements
+
+
+L = rand(m, r);
+R = rand(n, r);
+noise = sigma * rand(m, n);
+M = L * R' + noise * mask(:,:,1);
+M = mapminmax(M, 0, 255);
+X_full = repmat(M, [1 1 dim]);
 
 %% Truncated Nuclear Norm, based on Weighted Residual Error
 fprintf(['Truncated Nuclear Norm Regularization Method Based on Weighted ' ...
@@ -81,7 +72,7 @@ toc(t1);
 
 tnnr_rank = tnnr_res.best_rank;
 tnnr_psnr = tnnr_res.best_psnr;
-tnnr_erec = tnnr_res.best_erec;
+tnnr_erec = tnnr_res.best_erec ./ 255;
 tnnr_time_cost = tnnr_res.time(tnnr_rank);
 tnnr_iteration = tnnr_res.iterations(tnnr_rank, :);
 
@@ -97,7 +88,7 @@ xlabel('Rank');
 ylabel('PSNR');
 
 subplot(2, 2, 2);
-plot(tnnr_res.Rank, tnnr_res.Erec, 'diamond-');
+plot(tnnr_res.Rank, tnnr_res.Erec ./ 255, 'diamond-');
 xlabel('Rank');
 ylabel('Recovery error');
 
@@ -107,7 +98,7 @@ xlabel('Iteration');
 ylabel('PSNR');
 
 subplot(2, 2, 4);
-plot(tnnr_res.Erec_iter, '^-');
+plot(tnnr_res.Erec_iter ./ 255, '^-');
 xlabel('Iteration');
 ylabel('Recovery error');
 
@@ -126,10 +117,10 @@ outputFileName = fullfile(result_dir, 'parameters.txt');
 fid = fopen(outputFileName, 'a') ;
 fprintf(fid, '****** %s ******\n', datestr(now,0));
 fprintf(fid, '%s\n', ['image: '           image_name               ]);
-fprintf(fid, '%s\n', ['mask: '            mask_list{mask_id}       ]);
-fprintf(fid, '%s\n', ['block or noise: '  num2str(para.block)      ]);
+% fprintf(fid, '%s\n', ['mask: '            mask_list{mask_id}       ]);
+% fprintf(fid, '%s\n', ['block or noise: '  num2str(para.block)      ]);
 fprintf(fid, '%s\n', ['loss ratio: '      num2str(para.lost)       ]);
-fprintf(fid, '%s\n', ['save eps figure: ' num2str(para.save_eps)   ]);
+% fprintf(fid, '%s\n', ['save eps figure: ' num2str(para.save_eps)   ]);
 fprintf(fid, '%s\n', ['min rank: '        num2str(para.min_R)      ]);
 fprintf(fid, '%s\n', ['max rank: '        num2str(para.max_R)      ]);
 fprintf(fid, '%s\n', ['max iteration: '   num2str(para.max_iter)   ]);
@@ -138,7 +129,7 @@ fprintf(fid, '%s\n', ['alpha: '           num2str(para.alpha)      ]);
 fprintf(fid, '%s\n', ['rho: '             num2str(para.rho)        ]);
 fprintf(fid, '%s\n', ['theta1: '          num2str(para.theta1)     ]);
 fprintf(fid, '%s\n', ['theta2: '          num2str(para.theta2)     ]);
-fprintf(fid, '%s\n', ['L: '               num2str(para.L)          ]);
+% fprintf(fid, '%s\n', ['L: '               num2str(para.L)          ]);
 
 fprintf(fid, '%s\n', ['rank: '            num2str(tnnr_rank)       ]);
 fprintf(fid, '%s\n', ['psnr: '            num2str(tnnr_psnr)       ]);
