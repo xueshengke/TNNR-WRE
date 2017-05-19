@@ -31,11 +31,11 @@ para.max_R = 15;          % maximum rank of chosen image
 para.max_iter = 200;     % maximum number of iteration
 para.epsilon = 1e-4;     % tolerance of iteration
 
-para.alpha = 5e-4;       % 1/apha, positive step size of gradient descent
-para.rho   = 1.15;       % rho > 1, scale up the value of alpha
+para.alpha = 1e-4;       % 1/apha, positive step size of gradient descent
+para.rho   = 1.20;       % rho > 1, scale up the value of alpha
 para.theta1 = 1.6;       % compute an increasing weight matrix, W1 >= W2
 para.theta2 = 1;         % if theta = 1, W = I, an indentity matrix
-para.L     = 50;        % 1 <= L <= m, compute W
+para.L     = 150;        % 1 <= L <= m, compute W
 para.progress = 0;
 
 %% generate synthetic data for experiment
@@ -44,7 +44,7 @@ m = 200;
 n = 200;
 dim = 3;
 r = 10;
-sigma = 0.1;    % [0.1, 0.9]
+sigma = 0.9;    % [0.1, 0.9]
 
 %% random loss
 rnd_idx = randi([0, 100-1], m, n);
@@ -56,9 +56,9 @@ mask = repmat(rnd_idx, [1 1 dim]); % index matrix of the known elements
 % missing = ones(size(mask)) - mask; % index matrix of the unknown elements
 
 
-L = rand(m, r);
-R = rand(n, r);
-noise = sigma * rand(m, n);
+L = randn(m, r);
+R = randn(n, r);
+noise = sigma * randn(m, n);
 M = L * R' + noise * mask(:,:,1);
 M = mapminmax(M, 0, 255);
 X_full = repmat(M, [1 1 dim]);
@@ -131,6 +131,7 @@ fprintf(fid, '%s\n', ['theta1: '          num2str(para.theta1)     ]);
 fprintf(fid, '%s\n', ['theta2: '          num2str(para.theta2)     ]);
 % fprintf(fid, '%s\n', ['L: '               num2str(para.L)          ]);
 
+fprintf(fid, '%s\n', ['sigma: '            num2str(sigma)          ]);
 fprintf(fid, '%s\n', ['rank: '            num2str(tnnr_rank)       ]);
 fprintf(fid, '%s\n', ['psnr: '            num2str(tnnr_psnr)       ]);
 fprintf(fid, '%s\n', ['recovery error: '  num2str(tnnr_erec)       ]);

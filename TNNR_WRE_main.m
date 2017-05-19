@@ -31,13 +31,13 @@ end
 
 %% parameter configuration
 image_id = 9;            % select an image for experiment
-mask_id  = 6;            % select a mask for experiment
+mask_id  = 1;            % select a mask for experiment
 
-para.block = 1;          % 1 for block occlusion, 0 for random noise
-para.lost = 0.50;        % percentage of lost elements in matrix
+para.block = 0;          % 1 for block occlusion, 0 for random noise
+para.lost = 0.40;        % percentage of lost elements in matrix
 para.save_eps = 1;       % save eps figure in result directory
 para.min_R = 1;          % minimum rank of chosen image
-para.max_R = 10;         % maximum rank of chosen image
+para.max_R = 20;         % maximum rank of chosen image
 % it requires to test all ranks from min_R to max_R, note that different
 % images have different ranks, and various masks affect the ranks, too.
 
@@ -46,9 +46,9 @@ para.epsilon = 1e-4;     % tolerance of iteration
 
 para.alpha = 5e-4;       % 1/apha, positive step size of gradient descent
 para.rho   = 1.15;       % rho > 1, scale up the value of alpha
-para.theta1 = 1.6;       % compute an increasing weight matrix, W1 >= W2
-para.theta2 = 1;         % if theta = 1, W = I, an indentity matrix
-para.L     = 50;        % 1 <= L <= m, compute W
+para.theta1 = 1.0;       % compute an increasing weight matrix, W1 >= W2
+para.theta2 = 1.0;         % if theta = 1, W = I, an indentity matrix
+para.L     = 150;        % 1 <= L <= m, compute W
 para.progress = 0;
 
 %% select an image and a mask for experiment
