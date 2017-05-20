@@ -13,7 +13,8 @@ Pattern Analysis and Machine Intelligence, 35(9), 2117-2130.
 
 The code contains:
 |--------------
-|-- TNNR_WRE_main.m           entrance to start the experiment
+|-- TNNR_WRE_main.m           entrance to start real image experiment
+|-- TNNR_WRE_synthetic.m      entrance to start synthetic experiment
 |-- function/                 functions of TNNR-WRE algorithm
     |-- PSNR.m                compute the PSNR and Erec for recovered image
     |-- TNNR_WRE_algorithm.m  main part of TNNR-WRE implementation
@@ -32,7 +33,7 @@ al. (2013) paper, in which more details are demonstrated.
 If you have any questions about this implementation, please do not hesitate 
 to contact me.
 
-Shengke Xue, 
+Ph.D. Candidate, Shengke Xue, 
 College of Information Science and Electronic Engineering,
 Zhejiang University, Hangzhou, P. R. China,
 e-mail: (either one is o.k.)

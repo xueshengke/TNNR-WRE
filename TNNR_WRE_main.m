@@ -1,4 +1,4 @@
-% Xue Shengke, Zhejiang University, April 2017. 
+% Shengke Xue, Zhejiang University, April 2017. 
 % Contact information: see readme.txt.
 %
 % Reference: 
@@ -22,6 +22,7 @@ image_list = {'re1.jpg', 're2.jpg', 're3.jpg', 're4.jpg', 're5.jpg', ...
               're6.jpg', 're7.jpg', 're8.jpg', 're9.jpg', 're10.jpg', ...
               're11.jpg' };
 
+%% read mask files directory information
 file_list = dir('mask');
 num_mask = length(file_list) - 2;
 mask_list = cell(num_mask, 1);

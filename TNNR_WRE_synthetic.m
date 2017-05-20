@@ -1,4 +1,4 @@
-% Xue Shengke, Zhejiang University, April 2017. 
+% Shengke Xue, Zhejiang University, April 2017. 
 % Contact information: see readme.txt.
 %
 % Reference: 
@@ -20,11 +20,10 @@ result_dir = './result/synthetic';
 if ~exist(result_dir, 'dir'),   mkdir(result_dir); end
 
 %% parameter configuration
-% para.block = 1;          % 1 for block occlusion, 0 for random noise
 para.lost = 0.50;        % percentage of lost elements in matrix
 para.save_eps = 0;       % save eps figure in result directory
 para.min_R = 1;          % minimum rank of chosen image
-para.max_R = 15;          % maximum rank of chosen image
+para.max_R = 20;          % maximum rank of chosen image
 % it requires to test all ranks from min_R to max_R, note that different
 % images have different ranks, and various masks affect the ranks, too.
 
@@ -54,7 +53,6 @@ fprintf('loss: %d%% elements are missing.\n', lost);
 rnd_idx = double(old_idx < (100-lost));
 mask = repmat(rnd_idx, [1 1 dim]); % index matrix of the known elements
 % missing = ones(size(mask)) - mask; % index matrix of the unknown elements
-
 
 L = randn(m, r);
 R = randn(n, r);
@@ -117,10 +115,7 @@ outputFileName = fullfile(result_dir, 'parameters.txt');
 fid = fopen(outputFileName, 'a') ;
 fprintf(fid, '****** %s ******\n', datestr(now,0));
 fprintf(fid, '%s\n', ['image: '           image_name               ]);
-% fprintf(fid, '%s\n', ['mask: '            mask_list{mask_id}       ]);
-% fprintf(fid, '%s\n', ['block or noise: '  num2str(para.block)      ]);
 fprintf(fid, '%s\n', ['loss ratio: '      num2str(para.lost)       ]);
-% fprintf(fid, '%s\n', ['save eps figure: ' num2str(para.save_eps)   ]);
 fprintf(fid, '%s\n', ['min rank: '        num2str(para.min_R)      ]);
 fprintf(fid, '%s\n', ['max rank: '        num2str(para.max_R)      ]);
 fprintf(fid, '%s\n', ['max iteration: '   num2str(para.max_iter)   ]);
@@ -129,9 +124,9 @@ fprintf(fid, '%s\n', ['alpha: '           num2str(para.alpha)      ]);
 fprintf(fid, '%s\n', ['rho: '             num2str(para.rho)        ]);
 fprintf(fid, '%s\n', ['theta1: '          num2str(para.theta1)     ]);
 fprintf(fid, '%s\n', ['theta2: '          num2str(para.theta2)     ]);
-% fprintf(fid, '%s\n', ['L: '               num2str(para.L)          ]);
+fprintf(fid, '%s\n', ['L: '               num2str(para.L)          ]);
+fprintf(fid, '%s\n', ['sigma: '           num2str(sigma)           ]);
 
-fprintf(fid, '%s\n', ['sigma: '            num2str(sigma)          ]);
 fprintf(fid, '%s\n', ['rank: '            num2str(tnnr_rank)       ]);
 fprintf(fid, '%s\n', ['psnr: '            num2str(tnnr_psnr)       ]);
 fprintf(fid, '%s\n', ['recovery error: '  num2str(tnnr_erec)       ]);
