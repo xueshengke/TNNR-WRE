@@ -31,7 +31,7 @@ for i = 1 : num_mask
 end
 
 %% parameter configuration
-image_id = 9;            % select an image for experiment
+image_id = 8;            % select an image for experiment
 mask_id  = 1;            % select a mask for experiment
 
 para.block = 0;          % 1 for block occlusion, 0 for random noise
@@ -65,12 +65,19 @@ if para.block
     fprintf('mask: %s.\n', mask_list{mask_id});
 else
     % random loss
-    rnd_idx = randi([0, 100-1], m, n);
+%     rnd_idx = randi([0, 100-1], m, n);
+%     old_idx = rnd_idx;
+%     lost = para.lost * 100;
+%     fprintf('loss: %d%% elements are missing.\n', lost);
+%     rnd_idx = double(old_idx < (100-lost));
+%     mask = repmat(rnd_idx, [1 1 dim]); % index matrix of the known elements
+    
+    rnd_idx = randi([0, 100-1], m, n, dim);
     old_idx = rnd_idx;
     lost = para.lost * 100;
     fprintf('loss: %d%% elements are missing.\n', lost);
     rnd_idx = double(old_idx < (100-lost));
-    mask = repmat(rnd_idx, [1 1 dim]); % index matrix of the known elements
+    mask = rnd_idx; % index matrix of the known elements    
 end
 
 %% Truncated Nuclear Norm, based on Weighted Residual Error

@@ -21,8 +21,8 @@ function [result, X_rec] = TNNR_WRE_algorithm(result_dir, image_name, X_full, ma
 
 X_miss = X_full .* mask;	  % incomplete image with some pixels lost
 [m, n, dim] = size(X_full);
-known = mask(:, :, 1);        % index matrix of known elements
-missing = ones(m,n) - known;  % index matrix of missing elements
+known = mask;                 % index matrix of known elements
+missing = ones(size(mask)) - known;  % index matrix of missing elements
 
 min_R    = para.min_R;        % minimum rank of chosen image
 max_R    = para.max_R;        % maximum rank of chosen image
@@ -31,10 +31,16 @@ tol      = para.epsilon;      % tolerance
 alpha_0  = para.alpha;        % initial value of alpha
 rho      = para.rho; 
 
-W1_inc = weight_matrix(m, para.L, para.theta1);  % weight in ascent order
-W1_sort = weight_sort(known, W1_inc);            % weight sorted
-W2_inc = weight_matrix(m, para.L, para.theta2);  % weight in ascent order
-W2_sort = weight_sort(known, W2_inc);            % weight sorted
+W1_inc = zeros(m, m, dim);
+W1_sort = zeros(m, m, dim);
+W2_inc = zeros(m, m, dim);
+W2_sort = zeros(m, m, dim);
+for i = 1 : dim
+    W1_inc(:,:,i) = weight_matrix(m, para.L, para.theta1);  % weight in ascent order
+    W1_sort(:,:,i) = weight_sort(known(:,:,i), W1_inc(:,:,i)); % weight sorted
+    W2_inc(:,:,i) = weight_matrix(m, para.L, para.theta2);  % weight in ascent order
+    W2_sort(:,:,i) = weight_sort(known(:,:,i), W2_inc(:,:,i)); % weight sorted
+end
 
 Erec = zeros(max_R, 1);  % reconstruction error, best value in each rank
 Psnr = zeros(max_R, 1);  % PSNR, best value in each rank
@@ -74,8 +80,8 @@ for R = min_R : max_R    % test if each rank is proper for completion
             A = U'; B = V';
             C = U(:, 1:R)'; D = V(:, 1:R)'; 
             
-            X = X - 1/alpha * (W1_sort*A'*B - W2_sort*C'*D);
-            X = X .* missing + M .* known;
+            X = X - 1/alpha * (W1_sort(:,:,c)*A'*B - W2_sort(:,:,c)*C'*D);
+            X = X .* missing(:,:,c) + M .* known(:,:,c);
             X_iter(:, :, c, i) = X;
             
             alpha = rho * alpha;
